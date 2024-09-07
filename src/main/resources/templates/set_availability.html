@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Availability - Availability Scheduler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto mt-10 max-w-4xl">
+    <h1 class="text-3xl font-bold mb-5">Set Your Availability</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <form th:action="@{/availabilities/set}" method="post">
+            <input type="hidden" name="email" th:value="${user.email}">
+            <div class="mb-4">
+                <label for="start" class="block text-gray-700 text-sm font-bold mb-2">Start Time:</label>
+                <input type="datetime-local" id="start" name="start" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label for="end" class="block text-gray-700 text-sm font-bold mb-2">End Time:</label>
+                <input type="datetime-local" id="end" name="end" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label for="duration" class="block text-gray-700 text-sm font-bold mb-2">Duration (minutes):</label>
+                <input type="number" id="duration" name="duration" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Save Availability
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

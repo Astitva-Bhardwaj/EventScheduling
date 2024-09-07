@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard - Availability Scheduler</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto mt-10 max-w-4xl">
+  <h1 class="text-3xl font-bold mb-5">Welcome, <span th:text="${user.name}"></span>!</h1>
+  <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+    <h2 class="text-2xl font-semibold mb-4">Your Dashboard</h2>
+    <div class="grid grid-cols-2 gap-4">
+      <!-- Form to set availability -->
+      <form th:action="@{/availabilities/set}" method="get" class="flex items-center justify-center">
+        <input type="hidden" name="email" th:value="${user.email}">
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          Set Availability
+        </button>
+      </form>
+      <!-- Form to view sessions -->
+      <form th:action="@{/sessions/view/{userEmail}(userEmail=${user.email})}" method="get" class="flex items-center justify-center">
+        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+          View Sessions
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>

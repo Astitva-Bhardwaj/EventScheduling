@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Availability Scheduler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto mt-10 max-w-4xl">
+    <h1 class="text-3xl font-bold mb-5">Admin Dashboard</h1>
+
+    <!-- User Availability Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+        <h2 class="text-2xl font-semibold mb-4">User Availability</h2>
+        <select id="userSelect" class="block w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline">
+            <option value="">Select a user</option>
+            <!-- JavaScript will populate this select -->
+        </select>
+        <div id="userAvailability" class="mt-4">
+            <!-- JavaScript will populate this div -->
+        </div>
+    </div>
+
+    <!-- Create Session Section -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4">Create Session</h2>
+        <form id="createSessionForm">
+            <div class="mb-4">
+                <label for="sessionStart" class="block text-gray-700 text-sm font-bold mb-2">Start Time</label>
+                <input type="datetime-local" id="sessionStart" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label for="sessionDuration" class="block text-gray-700 text-sm font-bold mb-2">Duration (minutes)</label>
+                <input type="number" id="sessionDuration" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-4">
+                <label for="attendeeEmail" class="block text-gray-700 text-sm font-bold mb-2">Attendee Email</label>
+                <input type="email" id="attendeeEmail" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Create Session
+            </button>
+        </form>
+    </div>
+</div>
+<!-- JavaScript to handle dynamic content -->
+<script th:inline="javascript">
+    const API_URL = /*[[@{/availabilities/view/{userEmail}}]]*/ '/api';
+    const userSelect = document.getElementById('userSelect');
+    const userAvailabilityDiv = document.getElementById('userAvailability');
+    const createSessionForm = document.getElementById('createSessionForm');
+
+    // Fetch and populate the user list
+    async function fetchUsers() {
+        try {
+            const response = await fetch(`${API_URL}/users`);
+            const users = await response.json();
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = user.name;
+                userSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    }
+
+    // Fetch user availability when a user is selected
+    userSelect.addEventListener('change', async function() {
+        const userId = this.value;
+        if (!userId) return;
+
+        try {
+            const response = await fetch(`${API_URL}/availability/${userId}`);
+            const availability = await response.json();
+            displayUserAvailability(availability);
+        } catch (error) {
+            console.error('Error fetching availability:', error);
+        }
+    });
+
+    // Display user availability
+    function displayUserAvailability(availability) {
+        userAvailabilityDiv.innerHTML = '';  // Clear previous data
+        if (availability.length === 0) {
+            userAvailabilityDiv.innerHTML = '<p class="text-red-500">No availability set for this user.</p>';
+            return;
+        }
+        availability.forEach(slot => {
+            const slotDiv = document.createElement('div');
+            slotDiv.className = 'p-2 bg-gray-100 mb-2 rounded border';
+            slotDiv.textContent = `Available on ${slot.dayOfWeek}, ${slot.startTime} to ${slot.endTime}`;
+            userAvailabilityDiv.appendChild(slotDiv);
+        });
+    }
+
+    // Handle session creation form submission
+    createSessionForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = {
+            startTime: document.getElementById('sessionStart').value,
+            duration: document.getElementById('sessionDuration').value,
+            attendeeEmail: document.getElementById('attendeeEmail').value
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/sessions`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                alert('Session created successfully!');
+                createSessionForm.reset();
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message}`);
+            }
+        } catch (error) {
+            console.error('Error creating session:', error);
+        }
+    });
+
+    // Initialize by fetching users
+    fetchUsers();
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Availability - Availability Scheduler</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto mt-10 max-w-4xl">
+  <h1 class="text-3xl font-bold mb-5">Availability for <span th:text="${user.name}"></span></h1>
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <table class="w-full">
+      <thead>
+      <tr>
+        <th class="px-4 py-2">Start Time</th>
+        <th class="px-4 py-2">End Time</th>
+        <th class="px-4 py-2">Duration (minutes)</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="availability : ${availabilities}">
+        <td class="border px-4 py-2" th:text="${#temporals.format(availability.start, 'yyyy-MM-dd HH:mm')}"></td>
+        <td class="border px-4 py-2" th:text="${#temporals.format(availability.end, 'yyyy-MM-dd HH:mm')}"></td>
+        <td class="border px-4 py-2" th:text="${availability.duration}"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
